@@ -1,14 +1,12 @@
 import { DataProvider } from "./context/useDataContext"
+import { UserCRUD } from "./pages/UserCRUD/UserCRUD"
 
 
 function App() {
 
   return (
     <DataProvider>
-      <div className="App">
-        <h1>Compiladores FrontEnd</h1>
-        <p>Bienvenido al compilador de lenguajes</p>
-      </div>
+      <UserCRUD/>
     </DataProvider>
   )
 }

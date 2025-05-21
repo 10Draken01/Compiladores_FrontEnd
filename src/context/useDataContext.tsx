@@ -7,7 +7,7 @@ import type { UserType } from "../types/UserType";
 const dataContext = createContext<DataContextType | null>(null);
 
 export function DataProvider({ children }: DataProviderProps) {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<UserType[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const { getUsers } = useUser();
@@ -20,13 +20,9 @@ export function DataProvider({ children }: DataProviderProps) {
                 
                 if (Array.isArray(response.data)) {
                     setData(response.data);
-                    response.data.map((user: UserType) => {
-                        console.log(user.Nombre);
-                    })
                 } else if ("error" in response){
                     console.log(response.error)
                 }
-                console.log(response.data);
             } catch (error) {
                 setError("Error fetching data");
             } finally {
