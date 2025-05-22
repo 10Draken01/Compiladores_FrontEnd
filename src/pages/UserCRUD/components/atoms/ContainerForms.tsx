@@ -5,10 +5,12 @@ export const ContainerForms = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     width: 100%;
-    height: 100%;
+    height: fit-content;
     background-color: #f5f5f5;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 1rem;
+    gap: 1rem;
 `;

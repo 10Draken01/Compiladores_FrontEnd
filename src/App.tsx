@@ -1,5 +1,5 @@
 import { DataProvider } from "./context/useDataContext"
-import { UserCRUD } from "./pages/UserCRUD/UserCRUD"
+import { UserCRUD } from "./Pages/UserCrud/UserCRUD"
 
 
 function App() {

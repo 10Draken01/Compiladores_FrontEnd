@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 
 export const ButtonForm = styled.button`
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 1rem 2rem;
+    border-radius: 0.4rem;
     border: none;
     background-color: #007bff;
     color: white;

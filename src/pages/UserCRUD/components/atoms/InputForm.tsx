@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export const InputForm = styled.input`
     width: 100%;
-    padding: 10px;
+    padding: .4rem;
+    box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #ccc;
-    margin-bottom: 10px;
     font-size: 16px;
     &:focus {
         outline: none;
