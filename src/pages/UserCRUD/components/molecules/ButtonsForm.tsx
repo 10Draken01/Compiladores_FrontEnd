@@ -8,19 +8,19 @@ export function ButtonsForm({ $onClick, formType }: { $onClick: (v: number) => v
                 onClick={() => $onClick(0)} 
                 $selected={formType === 0}
             >
-                Add User
+                Agregar un Usuario
             </ButtonSelectionForm>
             <ButtonSelectionForm 
                 onClick={() => $onClick(1)} 
                 $selected={formType === 1}
             >
-                Update User
+                Actualizar un Usuario
             </ButtonSelectionForm>
             <ButtonSelectionForm 
                 onClick={() => $onClick(2)} 
                 $selected={formType === 2}
             >
-                Delete User
+                Borrar un Usuario
             </ButtonSelectionForm>
         </ContainerFormsButtons>
     )

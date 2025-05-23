@@ -1,24 +1,33 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import type { DataContextType } from "../types/DataContextType";
 import type { DataProviderProps } from "../types/DataProviderProps";
-import { useUser } from "../hooks/useUser";
-import type { UserType } from "../types/UserType";
+import type { ClienteType } from "../types/ClienteType";
+import { useCliente } from "../hooks/useCliente";
 
 const DataContext = createContext<DataContextType | null>(null);
 
 export function DataProvider({ children }: DataProviderProps) {
-    const [users, setUsers] = useState<UserType[]>([]);
+    const [clientes, setClientes] = useState<ClienteType[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [clientesPerPage] = useState<number>(10);
+    const [apiPage, setApiPage] = useState<number>(1);
+    const [totalApiPages] = useState<number>(100); // Máximo de páginas API disponibles
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const { getUsers, createUser, updateUser, deleteUser } = useUser();
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [filterBy, setFilterBy] = useState<'all' | 'with_errors' | 'without_errors'>('all');
+    
+    const { getClientes, createCliente, updateCliente, deleteCliente } = useCliente();
 
-    const refreshUsers = useCallback(async () => {
+    // Obtener clientes de la API
+    const refreshClientes = useCallback(async (page: number = apiPage) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await getUsers(1);
+            const response = await getClientes(page);
             if (response.data) {
-                setUsers(response.data);
+                setClientes(response.data);
+                setCurrentPage(1); // Reset a la primera página de visualización
             } else if (response.error) {
                 setError(response.error);
             }
@@ -27,63 +36,166 @@ export function DataProvider({ children }: DataProviderProps) {
         } finally {
             setLoading(false);
         }
-    }, [getUsers]);
+    }, [getClientes, apiPage]);
 
-    const addUser = useCallback(async (user: Omit<UserType, '_id'>): Promise<boolean> => {
+    // Cambiar página de API
+    const changeApiPage = useCallback(async (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalApiPages) {
+            setApiPage(newPage);
+            await refreshClientes(newPage);
+        }
+    }, [refreshClientes, totalApiPages]);
+
+    // Filtrar y buscar clientes
+    const getFilteredClientes = useCallback(() => {
+        let filtered = [...clientes];
+
+        // Aplicar búsqueda
+        if (searchTerm) {
+            filtered = filtered.filter(cliente =>
+                cliente.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                cliente.Clave_Cliente.includes(searchTerm) ||
+                cliente.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                cliente.Celular.includes(searchTerm)
+            );
+        }
+
+        // Aplicar filtros
+        if (filterBy === 'with_errors') {
+            filtered = filtered.filter(cliente => 
+                cliente.Errores && (
+                    cliente.Errores.Nombre.length > 0 ||
+                    cliente.Errores.Celular.length > 0 ||
+                    cliente.Errores.Email.length > 0
+                )
+            );
+        } else if (filterBy === 'without_errors') {
+            filtered = filtered.filter(cliente => 
+                !cliente.Errores || (
+                    cliente.Errores.Nombre.length === 0 &&
+                    cliente.Errores.Celular.length === 0 &&
+                    cliente.Errores.Email.length === 0
+                )
+            );
+        }
+
+        return filtered;
+    }, [clientes, searchTerm, filterBy]);
+
+    // Obtener clientes para la página actual de visualización
+    const getCurrentPageClientes = useCallback(() => {
+        const filtered = getFilteredClientes();
+        const startIndex = (currentPage - 1) * clientesPerPage;
+        const endIndex = startIndex + clientesPerPage;
+        return filtered.slice(startIndex, endIndex);
+    }, [getFilteredClientes, currentPage, clientesPerPage]);
+
+    // Calcular total de páginas de visualización
+    const getTotalPages = useCallback(() => {
+        const filtered = getFilteredClientes();
+        return Math.ceil(filtered.length / clientesPerPage);
+    }, [getFilteredClientes, clientesPerPage]);
+
+    // CRUD Operations
+    const addCliente = useCallback(async (cliente: Omit<ClienteType, '_id'>): Promise<boolean> => {
         setError(null);
-        const response = await createUser(user);
+        const response = await createCliente(cliente);
         if (response.data) {
-            await refreshUsers();
+            await refreshClientes();
             return true;
         } else if (response.error) {
             setError(response.error);
             return false;
         }
         return false;
-    }, [createUser, refreshUsers]);
+    }, [createCliente, refreshClientes]);
 
-    const updateUserData = useCallback(async (user: UserType): Promise<boolean> => {
+    const updateClienteData = useCallback(async (cliente: ClienteType): Promise<boolean> => {
         setError(null);
-        const response = await updateUser(user);
+        const response = await updateCliente(cliente);
         if (response.data) {
-            await refreshUsers();
+            await refreshClientes();
             return true;
         } else if (response.error) {
             setError(response.error);
             return false;
         }
         return false;
-    }, [updateUser, refreshUsers]);
+    }, [updateCliente, refreshClientes]);
 
-    const deleteUserData = useCallback(async (claveUser: string): Promise<boolean> => {
+    const deleteClienteData = useCallback(async (claveCliente: string): Promise<boolean> => {
         setError(null);
-        const response = await deleteUser(claveUser);
+        const response = await deleteCliente(claveCliente);
         if (response.data) {
-            await refreshUsers();
+            await refreshClientes();
             return true;
         } else if (response.error) {
             setError(response.error);
             return false;
         }
         return false;
-    }, [deleteUser, refreshUsers]);
+    }, [deleteCliente, refreshClientes]);
 
+    // Carga inicial
     useEffect(() => {
-        refreshUsers();
-    }, [refreshUsers]);
+        let isMounted = true;
+        
+        const loadInitialData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await getClientes(1);
+                if (isMounted) {
+                    if (response.data) {
+                        setClientes(response.data);
+                    } else if (response.error) {
+                        setError(response.error);
+                    }
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setError("Error inesperado al cargar usuarios");
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadInitialData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     return (
         <DataContext.Provider value={{
-            users,
-            setUsers,
+            clientes,
+            setClientes,
             error,
             setError,
             loading,
             setLoading,
-            refreshUsers,
-            addUser,
-            updateUser: updateUserData,
-            deleteUser: deleteUserData
+            refreshClientes,
+            addCliente,
+            updateCliente: updateClienteData,
+            deleteCliente: deleteClienteData,
+            // Nuevas funcionalidades de paginación
+            currentPage,
+            setCurrentPage,
+            clientesPerPage,
+            apiPage,
+            setApiPage: changeApiPage,
+            totalApiPages,
+            searchTerm,
+            setSearchTerm,
+            filterBy,
+            setFilterBy,
+            getCurrentPageClientes,
+            getTotalPages,
+            getFilteredClientes
         }}>
             {children}
         </DataContext.Provider>

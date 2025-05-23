@@ -5,7 +5,7 @@ export const Form = styled.form`
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
     width: 100%;
     box-sizing: border-box;
     background-color: #3a3a3a;
@@ -14,10 +14,15 @@ export const Form = styled.form`
     padding: 1rem;
 
     div{
-        width: calc((100% / 3) - 0.7rem);
+        width: 49%;
         display: flex;
         box-sizing: border-box;
         flex-direction: column;
         gap: 0.5rem;
+    }
+    .BtnForm{
+        width:100%;
+        justify-content: center;
+        align-items: center;
     }
 `;

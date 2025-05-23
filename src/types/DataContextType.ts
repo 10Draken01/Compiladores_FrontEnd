@@ -1,14 +1,33 @@
-import type { UserType } from "./UserType";
+import type { ClienteType } from "./ClienteType";
 
 export interface DataContextType {
-    users: UserType[];
-    setUsers: (users: UserType[]) => void;
+    clientes: ClienteType[];
+    setClientes: (clientes: ClienteType[]) => void;
     error: string | null;
     setError: (error: string | null) => void;
     loading: boolean;
     setLoading: (loading: boolean) => void;
-    refreshUsers: () => Promise<void>;
-    addUser: (user: Omit<UserType, '_id'>) => Promise<boolean>;
-    updateUser: (user: UserType) => Promise<boolean>;
-    deleteUser: (claveUser: string) => Promise<boolean>;
+    refreshClientes: () => Promise<void>;
+    addCliente: (cliente: Omit<ClienteType, '_id'>) => Promise<boolean>;
+    updateCliente: (cliente: ClienteType) => Promise<boolean>;
+    deleteCliente: (claveCliente: string) => Promise<boolean>;
+    
+    // Paginación y navegación
+    currentPage: number;
+    setCurrentPage: (page: number) => void;
+    clientesPerPage: number;
+    apiPage: number;
+    setApiPage: (page: number) => Promise<void>;
+    totalApiPages: number;
+    
+    // Búsqueda y filtros
+    searchTerm: string;
+    setSearchTerm: (term: string) => void;
+    filterBy: 'all' | 'with_errors' | 'without_errors';
+    setFilterBy: (filter: 'all' | 'with_errors' | 'without_errors') => void;
+    
+    // Funciones útiles
+    getCurrentPageClientes: () => ClienteType[];
+    getTotalPages: () => number;
+    getFilteredClientes: () => ClienteType[];
 }

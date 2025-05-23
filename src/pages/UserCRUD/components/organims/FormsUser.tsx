@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { ContainerForms } from "../atoms/ContainerForms";
-import { ContainerFormsButtons } from "../atoms/ContainerFormsButtons";
-import { ButtonSelectionForm } from "../atoms/ButtonSelectionForm";
-import { FormAddUser } from "../molecules/FormAddUser";
-import { FormUpdateUser } from "../molecules/FormUpdateUser";
-import { FormDeleteUser } from "../molecules/FormDeleteUser";
+import { FormAddCliente } from "../molecules/FormAddCliente";
+import { FormUpdateCliente } from "../molecules/FormUpdateCliente";
+import { FormDeleteCliente } from "../molecules/FormDeleteCliente";
 import { ButtonsForm } from "../molecules/ButtonsForm";
 
 // Cambiar entre formularios
@@ -19,10 +17,10 @@ export function FormsUser(){
             <ButtonsForm $onClick={handleFormTypeChange} formType={formType}/>
             {
                 formType === 0 ? 
-                (<FormAddUser />) :
+                (<FormAddCliente />) :
                 formType === 1 ? 
-                (<FormUpdateUser />) :
-                (<FormDeleteUser />) 
+                (<FormUpdateCliente />) :
+                (<FormDeleteCliente />) 
             }
         </ContainerForms>
 

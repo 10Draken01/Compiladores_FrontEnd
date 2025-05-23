@@ -5,14 +5,16 @@ export const ButtonSelectionForm = styled.button<{ $selected: boolean }>`
     padding: 1rem;
     border-radius: .4rem;
     border: none;
-    background-color: ${({ $selected }) => ($selected ? '#007bff' : '#ccc')};
-    color: ${({ $selected }) => ($selected ? 'white' : '#575757')};;
+    background-color: #272727;
+    color: 'white';
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    // box-Shadow con sombreado para adentro
+    box-shadow: ${({ $selected }) => ($selected ? 'inset 0 0 5px rgba(0, 0, 0, 0.849)' : '0 0 5px rgba(255, 255, 255, 0.849)')};
 
     &:hover {
-        background-color: #0056b3;
+        background-color: #272727;
         color: white;
     }
 

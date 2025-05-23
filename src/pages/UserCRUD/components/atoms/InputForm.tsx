@@ -5,11 +5,12 @@ export const InputForm = styled.input`
     padding: .4rem;
     box-sizing: border-box;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: none;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.849);
     font-size: 16px;
     &:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 5px rgba(0,123,255,.5);
+        border-color: #ffffff;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.849);
     }
 `;
