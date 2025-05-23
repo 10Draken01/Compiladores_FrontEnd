@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useDataContext } from '../../../../context/useDataContext';
 import { useCliente } from '../../../../hooks/useCliente';
+import type { ClienteType } from '../../../../types/ClienteType';
 
 // Styled Components
 const TableContainer = styled.div`
@@ -169,23 +170,10 @@ const PaginationInfo = styled.div`
   gap: 1rem;
 `;
 
-// Types
-interface ClienteType {
-  _id?: string;
-  Clave_Cliente: string;
-  Nombre: string;
-  Celular: string;
-  Email: string;
-  Errores?: {
-    Nombre: string[];
-    Celular: string[];
-    Email: string[];
-  };
-}
 
 
 export default function ClienteTable() {
-  const { clientes, loading, error } = useDataContext()
+  const { clientes, setClientes, loading, setLoading, error, setError } = useDataContext()
   const { getClientes } = useCliente()
   
   // Pagination states
@@ -250,13 +238,25 @@ export default function ClienteTable() {
   };
 
   // Handle API page change
-  const handleApiPageChange = () => {
+  const handleApiPageChange = useCallback(async () => {
     const pageNum = parseInt(pageInput);
     if (pageNum > 0 && pageNum !== apiPage) {
       setApiPage(pageNum);
-      getClientes(pageNum);
-    }
-  };
+              setLoading(true);
+              setError(null);
+              try {
+                  const response = await getClientes(pageNum);
+                  if (response.data) {
+                      setClientes(response.data);
+                  } else if (response.error) {
+                      setError(response.error);
+                  }
+              } catch (error) {
+                  setError("Error inesperado al cargar usuarios");
+              } finally {
+                  setLoading(false);
+              }
+          }}, [getClientes, apiPage]);
 
   // Handle display page change
   const handleDisplayPageChange = (page: number) => {
@@ -268,11 +268,7 @@ export default function ClienteTable() {
 
   // Check if cliente has errors
   const hasErrors = (cliente: ClienteType) => {
-    return cliente.Errores && (
-      cliente.Errores.Nombre.length > 0 ||
-      cliente.Errores.Celular.length > 0 ||
-      cliente.Errores.Email.length > 0
-    ) || false;
+    return cliente.Errores != null 
   };
 
   // Get error details

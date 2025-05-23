@@ -8,5 +8,5 @@ export interface ClienteType {
         Nombre: string[];
         Celular: string[];
         Email: string[];
-    };
+    } | null;
 }
