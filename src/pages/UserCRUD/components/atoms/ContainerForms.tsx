@@ -6,7 +6,6 @@ export const ContainerForms = styled.div`
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: 100%;
     height: fit-content;
     background-color: #f5f5f5;
     border-radius: 10px;

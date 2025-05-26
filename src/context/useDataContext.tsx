@@ -8,6 +8,7 @@ const DataContext = createContext<DataContextType | null>(null);
 
 export function DataProvider({ children }: DataProviderProps) {
     const [clientes, setClientes] = useState<ClienteType[]>([]);
+    const [displayPage, setDisplayPage] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [clientesPerPage] = useState<number>(10);
     const [apiPage, setApiPage] = useState<number>(1);
@@ -16,7 +17,8 @@ export function DataProvider({ children }: DataProviderProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [filterBy, setFilterBy] = useState<'all' | 'with_errors' | 'without_errors'>('all');
-    
+    const [currentClientes, setCurrentClientes] = useState<ClienteType[]>([]);
+
     const { getClientes, createCliente, updateCliente, deleteCliente } = useCliente();
 
     // Obtener clientes de la API
@@ -50,7 +52,7 @@ export function DataProvider({ children }: DataProviderProps) {
     const getFilteredClientes = useCallback(() => {
         let filtered = [...clientes];
 
-        // Aplicar búsqueda
+        // Aplicar búsqueda y validar que sea numerico
         if (searchTerm) {
             filtered = filtered.filter(cliente =>
                 cliente.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,23 +60,27 @@ export function DataProvider({ children }: DataProviderProps) {
                 cliente.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 cliente.Celular.includes(searchTerm)
             );
+
+            if (filtered.length === 0) {
+                // Buscar en la base de datos si no se encuentra en la lista
+            }
         }
 
         // Aplicar filtros
         if (filterBy === 'with_errors') {
-            filtered = filtered.filter(cliente => 
+            filtered = filtered.filter(cliente =>
                 cliente.Errores && (
-                    cliente.Errores.Nombre.length > 0 ||
-                    cliente.Errores.Celular.length > 0 ||
-                    cliente.Errores.Email.length > 0
+                    cliente.Errores.Nombre?.length > 0 ||
+                    cliente.Errores.Celular?.length > 0 ||
+                    cliente.Errores.Email?.length > 0
                 )
             );
         } else if (filterBy === 'without_errors') {
-            filtered = filtered.filter(cliente => 
+            filtered = filtered.filter(cliente =>
                 !cliente.Errores || (
-                    cliente.Errores.Nombre.length === 0 &&
-                    cliente.Errores.Celular.length === 0 &&
-                    cliente.Errores.Email.length === 0
+                    cliente.Errores.Nombre?.length === 0 &&
+                    cliente.Errores.Celular?.length === 0 &&
+                    cliente.Errores.Email?.length === 0
                 )
             );
         }
@@ -82,12 +88,16 @@ export function DataProvider({ children }: DataProviderProps) {
         return filtered;
     }, [clientes, searchTerm, filterBy]);
 
+
     // Obtener clientes para la página actual de visualización
-    const getCurrentPageClientes = useCallback(() => {
+    useEffect(() => {
         const filtered = getFilteredClientes();
-        const startIndex = (currentPage - 1) * clientesPerPage;
-        const endIndex = startIndex + clientesPerPage;
-        return filtered.slice(startIndex, endIndex);
+
+        if (filtered) {
+            const startIndex = (currentPage - 1) * clientesPerPage;
+            const endIndex = startIndex + clientesPerPage;
+            setCurrentClientes([...filtered.slice(startIndex, endIndex)])
+        }
     }, [getFilteredClientes, currentPage, clientesPerPage]);
 
     // Calcular total de páginas de visualización
@@ -139,7 +149,7 @@ export function DataProvider({ children }: DataProviderProps) {
     // Carga inicial
     useEffect(() => {
         let isMounted = true;
-        
+
         const loadInitialData = async () => {
             setLoading(true);
             setError(null);
@@ -147,6 +157,7 @@ export function DataProvider({ children }: DataProviderProps) {
                 const response = await getClientes(1);
                 if (isMounted) {
                     if (response.data) {
+                        setCurrentClientes([...response.data.slice(0, 9)])
                         setClientes(response.data);
                     } else if (response.error) {
                         setError(response.error);
@@ -183,17 +194,20 @@ export function DataProvider({ children }: DataProviderProps) {
             updateCliente: updateClienteData,
             deleteCliente: deleteClienteData,
             // Nuevas funcionalidades de paginación
+            currentClientes,
+            setCurrentClientes,
             currentPage,
             setCurrentPage,
             clientesPerPage,
             apiPage,
             setApiPage: changeApiPage,
             totalApiPages,
+            displayPage,
+            setDisplayPage,
             searchTerm,
             setSearchTerm,
             filterBy,
             setFilterBy,
-            getCurrentPageClientes,
             getTotalPages,
             getFilteredClientes
         }}>

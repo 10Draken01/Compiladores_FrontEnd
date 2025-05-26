@@ -13,12 +13,16 @@ export interface DataContextType {
     deleteCliente: (claveCliente: string) => Promise<boolean>;
     
     // Paginación y navegación
+    currentClientes: ClienteType[];
+    setCurrentClientes: (clientes: ClienteType[]) => void;
     currentPage: number;
     setCurrentPage: (page: number) => void;
     clientesPerPage: number;
     apiPage: number;
     setApiPage: (page: number) => Promise<void>;
     totalApiPages: number;
+    displayPage: number;
+    setDisplayPage: (page: number) => void;
     
     // Búsqueda y filtros
     searchTerm: string;
@@ -27,7 +31,6 @@ export interface DataContextType {
     setFilterBy: (filter: 'all' | 'with_errors' | 'without_errors') => void;
     
     // Funciones útiles
-    getCurrentPageClientes: () => ClienteType[];
     getTotalPages: () => number;
     getFilteredClientes: () => ClienteType[];
 }

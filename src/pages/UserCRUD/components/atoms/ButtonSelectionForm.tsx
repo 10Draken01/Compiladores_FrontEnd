@@ -6,6 +6,7 @@ export const ButtonSelectionForm = styled.button<{ $selected: boolean }>`
     border-radius: .4rem;
     border: none;
     background-color: #272727;
+    box-sizing: border-box;
     color: 'white';
     font-size: 16px;
     cursor: pointer;

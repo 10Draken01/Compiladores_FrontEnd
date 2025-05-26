@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ContainerForms } from "../atoms/ContainerForms";
 import { FormAddCliente } from "../molecules/FormAddCliente";
 import { FormUpdateCliente } from "../molecules/FormUpdateCliente";
 import { FormDeleteCliente } from "../molecules/FormDeleteCliente";
@@ -13,7 +12,7 @@ export function FormsUser(){
         setFormType(type);
     }
     return(
-        <ContainerForms>
+        <>
             <ButtonsForm $onClick={handleFormTypeChange} formType={formType}/>
             {
                 formType === 0 ? 
@@ -22,7 +21,7 @@ export function FormsUser(){
                 (<FormUpdateCliente />) :
                 (<FormDeleteCliente />) 
             }
-        </ContainerForms>
+        </>
 
     )
 }

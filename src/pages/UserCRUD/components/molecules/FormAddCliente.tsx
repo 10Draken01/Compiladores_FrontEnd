@@ -43,7 +43,7 @@ export function FormAddCliente(){
             </div>
             <div>
                 <LabelForm htmlFor="email">Email</LabelForm>
-                <InputForm type="email" id="email" name="email"  />
+                <InputForm type="text" id="email" name="email"  />
             </div>
             <div className="BtnForm">
                 <ButtonForm type="submit">Agregar</ButtonForm>

@@ -8,8 +8,6 @@ export const Form = styled.form`
     justify-content: space-between;
     width: 100%;
     box-sizing: border-box;
-    background-color: #3a3a3a;
-    border-radius: .5rem;
     gap: 1rem;
     padding: 1rem;
 

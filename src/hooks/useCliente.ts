@@ -86,6 +86,7 @@ export const useCliente = () => {
             headers: { "Content-Type": "application/json" },
             }
         );
+        console.log(response);
         return { data: response.data as ClienteType[] };
         } catch (error: unknown) {
         return { error: "Error obteniendo usuarios" + " " + error };

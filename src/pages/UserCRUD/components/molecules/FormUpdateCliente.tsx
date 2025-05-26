@@ -5,6 +5,7 @@ import { InputForm } from "../atoms/InputForm";
 import { LabelForm } from "../atoms/LabelForm";
 import { useCliente } from "../../../../hooks/useCliente";
 import type { ClienteType } from "../../../../types/ClienteType";
+import { useDataContext } from "../../../../context/useDataContext";
 
 interface FormErrors {
   clave_cliente?: string;
@@ -22,6 +23,7 @@ export function FormUpdateCliente() {
   const formRef = useRef<HTMLFormElement>(null);
   
   const { updateCliente } = useCliente();
+  const { clientes, setClientes } = useDataContext()
 
   // Validación de clave de cliente
   const validateClaveCliente = useCallback((value: string): boolean => {
@@ -91,6 +93,18 @@ export function FormUpdateCliente() {
         setClaveCliente("");
         setClaveAproved(false);
         setErrors({});
+
+        setClientes([...clientes.map(cliente => {
+          if (cliente.Clave_Cliente === clientData.Clave_Cliente) {
+            return { ...cliente, 
+              Nombre: clientData.Nombre,
+              Celular: clientData.Celular,
+              Email: clientData.Email,
+              Errores: response.data.Errores || null
+             };
+          }
+          return cliente;
+        })]);
         
         console.log("Cliente actualizado exitosamente");
         // Aquí podrías mostrar un mensaje de éxito
@@ -170,7 +184,7 @@ export function FormUpdateCliente() {
           <div>
             <LabelForm htmlFor="celular">Celular</LabelForm>
             <InputForm 
-              type="tel" 
+              type="text" 
               id="celular" 
               name="celular" 
               placeholder="Ingrese el número de celular (10 dígitos)"
@@ -187,7 +201,7 @@ export function FormUpdateCliente() {
           <div>
             <LabelForm htmlFor="email">Email</LabelForm>
             <InputForm 
-              type="email" 
+              type="text" 
               id="email" 
               name="email" 
               placeholder="Ingrese el email"

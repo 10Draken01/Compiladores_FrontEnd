@@ -5,4 +5,5 @@ export const LabelForm = styled.label`
     font-weight: bold;
     color: #ffffff;
     text-align: left;
+    box-sizing: border-box;
 `;
